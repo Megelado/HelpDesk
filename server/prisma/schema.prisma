@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum calledStatus {
+  aberto
+  em_atendimento
+  encerrado
+}
+
+model Admin {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  password  String
+  photoUrl  String?   @map("photo_url")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("admins")
+}
+
+model Client {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  password  String
+  photoUrl  String?   @map("photo_url")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  calleds Called[]
+
+  @@map("clients")
+}
+
+model Technician {
+  id           String    @id @default(uuid())
+  name         String
+  email        String
+  password     String
+  photoUrl     String?   @map("photo_url")
+  availability Json?     @default("{}")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+  calleds      Called[]
+
+  @@map("technicians")
+}
+
+model Called {
+  id           String       @id @default(uuid())
+  title        String
+  description  String
+  status       calledStatus @default(aberto)
+  category     String
+  clientId     String       @map("client_id")
+  technicianId String       @map("technician_id")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime?    @updatedAt @map("updated_at")
+
+  client     Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  technician Technician @relation(fields: [technicianId], references: [id])
+
+  services Service[] @relation("CalledServices")
+
+  @@map("calleds")
+}
+
+model Service {
+  id        String  @id @default(uuid())
+  title     String
+  price     Float
+  active    Boolean @default(true)
+  isDefault Boolean @default(false)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  calleds Called[] @relation("CalledServices")
+
+  @@map("services")
+}
+
+model RevokedToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  revokedAt DateTime @default(now())
+
+  @@map("revoked_tokens")
+}

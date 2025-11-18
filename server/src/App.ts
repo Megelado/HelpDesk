@@ -1,0 +1,29 @@
+import express from "express";
+import "express-async-errors";
+import cors from "cors"
+
+import path from "path";
+import { routes } from "./routes/Index";
+import { errorHandling } from "./middlewares/ErrorHandling";
+
+const App = express();
+
+App.use(express.json());
+
+App.use(cors())
+
+App.use(
+  cors({
+    origin: "http://localhost:5173", // frontend
+    methods: ["GET", "POST", "PUT", "PATCH","DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+App.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
+
+App.use(routes);
+
+App.use(errorHandling);
+
+export { App };
