@@ -10,18 +10,18 @@ const App = express();
 
 App.use(express.json());
 
-App.use(cors())
-
 App.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://help-desk-rust.vercel.app/"
+      "https://help-desk-rust.vercel.app",
+      "https://help-desk-4yre8xwo4-michael-silvas-projects-fe86af8d.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 
 App.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
