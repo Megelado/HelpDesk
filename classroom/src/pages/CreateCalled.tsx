@@ -19,7 +19,7 @@ export function CreateCalled() {
   // Dados do chamado
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [category] = useState("");
 
   // Serviços
   const [services, setServices] = useState<Service[]>([]);
