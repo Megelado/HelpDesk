@@ -210,6 +210,10 @@ Gerar Client
 
 npx prisma generate
 
+gerar dados padrões
+
+npx prisma db seed
+
 📬 Contato
 
 Criado por Michael Silva
