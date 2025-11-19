@@ -10,15 +10,20 @@ const App = express();
 // Permite JSON no body
 App.use(express.json());
 
-// Configuração CORS
-App.options("*", cors({
+// CORS global
+App.use(cors({
   origin: [
     "http://localhost:5173",
     "https://help-desk-rust.vercel.app",
+    "https://helpdesk-vr1v.onrender.com",
     "https://help-desk-4yre8xwo4-michael-silvas-projects-fe86af8d.vercel.app"
   ],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+// Responder preflight OPTIONS para todas as rotas
+App.options("*", cors());
 
 // Rotas estáticas de uploads
 App.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
