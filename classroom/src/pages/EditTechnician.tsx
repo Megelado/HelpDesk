@@ -78,7 +78,7 @@ export function EditTechnician() {
         return;
       }
 
-      const response = await fetch(`${API_URL}/technicians/${technician.id}/update`, {
+      const response = await fetch(`${API_URL}technicians/${technician.id}/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export function EditTechnician() {
         }),
       });
 
-      const responseAvailability = await fetch(`${API_URL}/technicians/availability/${technician.id}`, {
+      const responseAvailability = await fetch(`${API_URL}technicians/availability/${technician.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
