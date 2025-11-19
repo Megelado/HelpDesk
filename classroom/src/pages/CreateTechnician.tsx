@@ -6,7 +6,7 @@ import ArrowHover from "../assets/icons/arrow-left-hover.svg";
 import IconX from "../assets/icons/x.svg";
 
 export function CreateTechnician() {
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -49,7 +49,7 @@ export function CreateTechnician() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado!");
 
-      const response = await fetch(`${API_URL}technicians`, {
+      const response = await fetch(`${API_URL}/technicians`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

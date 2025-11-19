@@ -17,7 +17,7 @@ interface Technician {
 }
 
 export function Technicians() {
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const [calleds, setCalleds] = useState<any[]>([]); 
   
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export function Technicians() {
       }
 
       try {
-        const url = `${API_URL}technicians`;
+        const url = `${API_URL}/technicians`;
 
         const response = await fetch(url, {
           headers: {
@@ -119,7 +119,7 @@ export function Technicians() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado!");
 
-      const response = await fetch(`${API_URL}technicians/${id}/delete`, {
+      const response = await fetch(`${API_URL}/technicians/${id}/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

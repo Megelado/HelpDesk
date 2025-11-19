@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = import.meta.env.VITE_API_URL;
 
 import PenLine from "../assets/icons/pen-line.svg";
 import Trash from "../assets/icons/trash.svg";
@@ -16,6 +15,7 @@ interface Client {
   createdAt: string;
   updatedAt: string;
 }
+const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
 
 const getFullPhotoUrl = (url?: string | null): string | undefined => {
   if (!url) return undefined;
@@ -28,7 +28,7 @@ const getFullPhotoUrl = (url?: string | null): string | undefined => {
 };
 
 export function Clients() {
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const [clients, setClients] = useState<Client[]>([]);
   const navigate = useNavigate();
   const [userType] = useState(localStorage.getItem("userType") || "");
@@ -54,8 +54,8 @@ export function Clients() {
 
       try {
         const url = userType === "admin"
-          ? `${API_URL}clients`
-          : `${API_URL}services`;
+          ? `${API_URL}/clients`
+          : `${API_URL}/services`;
 
         const response = await fetch(url, {
           headers: {
@@ -99,7 +99,7 @@ export function Clients() {
 
       const body = { name: editName, email: editEmail };
 
-      const response = await fetch(`${API_URL}clients/${selectedClientId}`, {
+      const response = await fetch(`${API_URL}/clients/${selectedClientId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export function Clients() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado!");
 
-      await fetch(`${API_URL}clients/${id}`, {
+      await fetch(`${API_URL}/clients/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

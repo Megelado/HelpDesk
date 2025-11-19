@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import IconDark from "../assets/icon-dark.svg";
 
 export function Login() {
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +20,7 @@ export function Login() {
     if (Object.keys(newErrors).length > 0) return;
 
     try {
-      const response = await fetch(`${API_URL}login`, {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

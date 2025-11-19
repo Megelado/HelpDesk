@@ -8,7 +8,7 @@ import ClockWhite from "../assets/icons/clock-2-white.svg"
 import BigCheckWhite from "../assets/icons/circle-check-big-white.svg"
 
 export function CalledsTechnicians() {
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const navigate = useNavigate();
   const [calleds, setCalleds] = useState<any[]>([]);
   const [userType] = useState(localStorage.getItem("userType") || "");
@@ -22,8 +22,8 @@ export function CalledsTechnicians() {
       }
 
       try {
-        let url = `${API_URL}calleds`;
-        if (userType === "technician") url = `${API_URL}calleds/technician`;
+        let url = `${API_URL}/calleds`;
+        if (userType === "technician") url = `${API_URL}/calleds/technician`;
 
         const response = await fetch(url, {
           headers: {
@@ -68,7 +68,7 @@ export function CalledsTechnicians() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`${API_URL}calleds/${id}/status`, {
+      const response = await fetch(`${API_URL}/calleds/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

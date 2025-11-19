@@ -8,7 +8,7 @@ import Eye from "../assets/icons/eye.svg"
 
 
 export function Calleds() {
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const navigate = useNavigate();
   const [calleds, setCalleds] = useState<any[]>([]);
   const [userType] = useState(localStorage.getItem("userType") || "");
@@ -24,8 +24,8 @@ export function Calleds() {
 
       try {
         let url = `${API_URL}calleds`;
-        if (userType === "client") url = `${API_URL}calleds/client`;
-        if (userType === "technician") url = `${API_URL}calleds/technician`;
+        if (userType === "client") url = `${API_URL}/calleds/client`;
+        if (userType === "technician") url = `${API_URL}/calleds/technician`;
 
         const response = await fetch(url, {
           headers: {

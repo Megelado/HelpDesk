@@ -19,7 +19,7 @@ interface Technician {
 }
 
 export function EditTechnician() {
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const navigate = useNavigate();
   const [technician, setTechnician] = useState<Technician | null>(null);
 
@@ -37,7 +37,7 @@ export function EditTechnician() {
       }
 
       try {
-        let url = `${API_URL}technicians/details/${id}`;
+        let url = `${API_URL}/technicians/details/${id}`;
 
         const response = await fetch(url, {
           headers: {
@@ -78,7 +78,7 @@ export function EditTechnician() {
         return;
       }
 
-      const response = await fetch(`${API_URL}technicians/${technician.id}/update`, {
+      const response = await fetch(`${API_URL}/technicians/${technician.id}/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export function EditTechnician() {
         }),
       });
 
-      const responseAvailability = await fetch(`${API_URL}technicians/availability/${technician.id}`, {
+      const responseAvailability = await fetch(`${API_URL}/technicians/availability/${technician.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
