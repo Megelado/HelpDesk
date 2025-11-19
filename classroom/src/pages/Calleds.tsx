@@ -23,7 +23,7 @@ export function Calleds() {
       }
 
       try {
-        let url = `${API_URL}calleds`;
+        let url = `${API_URL}/calleds`;
         if (userType === "client") url = `${API_URL}/calleds/client`;
         if (userType === "technician") url = `${API_URL}/calleds/technician`;
 
