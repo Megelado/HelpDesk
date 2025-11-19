@@ -18,8 +18,8 @@ interface Technician {
 
 export function Technicians() {
   const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
-  const [calleds, setCalleds] = useState<any[]>([]); 
-  
+  const [calleds, setCalleds] = useState<any[]>([]);
+
   const navigate = useNavigate();
   const location = useLocation();
   const [userType] = useState(localStorage.getItem("userType") || "");
@@ -63,18 +63,28 @@ export function Technicians() {
     }
 
     loadTechnicians();
-  },  [userType, navigate, location.state?.refresh]);
+  }, [userType, navigate, location.state?.refresh]);
 
   function Availability({ list }: { list: string[] }) {
     const [maxVisible, setMaxVisible] = useState(3);
+
+    // Ordena os horários corretamente
+    const sortedList = list
+      .filter(h => h) // remove valores falsy
+      .sort((a, b) => {
+        // Extrai apenas a hora (antes do ":") e converte para número
+        const hourA = parseInt(a.split(':')[0], 10);
+        const hourB = parseInt(b.split(':')[0], 10);
+        return hourA - hourB;
+      });
 
     useEffect(() => {
       const updateMax = () => {
         const w = window.innerWidth;
 
         if (w < 640) return setMaxVisible(1);
-        if (w < 1024) return setMaxVisible(2);   
-        return setMaxVisible(5);                 
+        if (w < 1024) return setMaxVisible(2);
+        return setMaxVisible(5);
       };
 
       updateMax();
@@ -82,21 +92,21 @@ export function Technicians() {
       return () => window.removeEventListener("resize", updateMax);
     }, []);
 
-    if (!list || list.length === 0) {
+    if (!sortedList || sortedList.length === 0) {
       return <span className="text-gray-400 italic text-xs">Sem disp.</span>;
     }
 
-    const visible = list.slice(0, maxVisible);
-    const hiddenCount = list.length - visible.length;
+    const visible = sortedList.slice(0, maxVisible);
+    const hiddenCount = sortedList.length - visible.length;
 
     return (
       <div className="flex flex-wrap gap-1 items-center max-w-[140px] sm:max-w-[200px] md:max-w-full">
-        {visible.map((day, index) => (
+        {visible.map((time, index) => (
           <span
             key={index}
             className="text-gray-300 border border-gray-500 rounded-full px-2 py-1 text-xs whitespace-nowrap"
           >
-            {day}
+            {time}
           </span>
         ))}
 
@@ -108,6 +118,8 @@ export function Technicians() {
       </div>
     );
   }
+
+
 
   const openDeleteModal = (tech: Technician) => {
     setSelectedTechId(tech.id);
@@ -172,14 +184,14 @@ export function Technicians() {
         <h1 className="text-blue-dark text-xl font-bold">Técnicos</h1>
 
         <a onClick={() => navigate("/technicians_create")} className="inline-flex items-center justify-center px-2 h-7 text-gray-600 bg-gray-200 hover:bg-gray-100 cursor-pointer rounded-sm gap-1">
-          
+
           <img src={Plus} className="w-3.5 h-3.5" />
           <span>Novo</span>
         </a>
       </div>
 
       <ul className="max-w-full border border-gray-500 rounded-[10px] pt-3 pb-0 ml-6 lg:ml-12 mr-6 lg:mr-12">
-        
+
         <li className="w-full grid grid-cols-4 md:grid-cols-5 gap-2 border-b border-gray-500 py-2 px-3 items-center">
           <span className="text-gray-400">Nome</span>
           <span className="text-gray-400 hidden md:block">Email</span>
