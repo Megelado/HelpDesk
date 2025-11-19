@@ -108,7 +108,7 @@ export function EditTechnician() {
       }
 
       alert("Técnico atualizado com sucesso!");
-      navigate(-1); // volta para a página anterior
+      navigate("/technicians", { state: { refresh: true } });
 
     } catch (err: any) {
       alert(err.message);

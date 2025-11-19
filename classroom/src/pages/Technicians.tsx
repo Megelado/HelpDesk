@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PenLine from "../assets/icons/pen-line.svg";
 import Plus from "../assets/icons/plus.svg";
 import Trash from "../assets/icons/trash.svg"
@@ -21,6 +21,7 @@ export function Technicians() {
   const [calleds, setCalleds] = useState<any[]>([]); 
   
   const navigate = useNavigate();
+  const location = useLocation();
   const [userType] = useState(localStorage.getItem("userType") || "");
 
   const [deleteTechModalOpen, setDeleteTechModalOpen] = useState(false);
@@ -62,7 +63,7 @@ export function Technicians() {
     }
 
     loadTechnicians();
-  }, [userType, navigate]);
+  },  [userType, navigate, location.state?.refresh]);
 
   function Availability({ list }: { list: string[] }) {
     const [maxVisible, setMaxVisible] = useState(3);
