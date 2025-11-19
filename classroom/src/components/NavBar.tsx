@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 
 import ClipboardList from "../assets/icons/clipboard-list-default.svg";
@@ -35,6 +35,7 @@ import hoverUpload from "../assets/icons/icons-hover/upload-hover.svg";
 import TrashRed from "../assets/icons/trash.svg";
 
 export function Navbar() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [userType] = useState(localStorage.getItem("userType") || "");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -204,7 +205,8 @@ export function Navbar() {
     setDeletePhoto(false);
     setNewPhotoFile(null);
     setProfileModalOpen(false);
-    window.location.reload();
+    // Recarrega a rota atual sem dar 404
+    navigate(location.pathname, { replace: true });
   }
 
 
