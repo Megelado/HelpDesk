@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 import PenLine from "../assets/icons/pen-line.svg";
 import Trash from "../assets/icons/trash.svg";
 import CloseDefault from "../assets/icons/x-default.svg";
@@ -15,20 +14,22 @@ interface Client {
   createdAt: string;
   updatedAt: string;
 }
-const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
 
+// API_URL única para DEV e PROD
+const API_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/+$/, "")
+  : window.location.origin;
+
+// Função para obter a URL completa da foto
 const getFullPhotoUrl = (url?: string | null): string | undefined => {
   if (!url) return undefined;
-  if (url.startsWith("http")) {
-    return url;
-  }
+  if (url.startsWith("http")) return url;
 
-  const finalUrl = url.startsWith('/') ? url.substring(1) : url;
+  const finalUrl = url.startsWith("/") ? url.substring(1) : url;
   return `${API_URL}/${finalUrl}`;
 };
 
 export function Clients() {
-  const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const [clients, setClients] = useState<Client[]>([]);
   const navigate = useNavigate();
   const [userType] = useState(localStorage.getItem("userType") || "");
@@ -113,15 +114,12 @@ export function Clients() {
         throw new Error(data.message || "Erro ao editar cliente");
       }
 
-      // Recebe o cliente atualizado (se o backend retornar o objeto com a foto completa)
       const updatedClient = await response.json();
 
-      // Atualiza lista local, usando o objeto retornado do backend
       setClients(prev =>
         prev.map(c => (c.id === selectedClientId ? updatedClient : c))
       );
 
-      // Fecha modal e limpa estados
       setEditClientModalOpen(false);
       setSelectedClient(null);
       setSelectedClientId(null);
@@ -146,7 +144,6 @@ export function Clients() {
         },
       });
 
-      // Atualiza lista local
       setClients(prev => prev.filter(c => c.id !== id));
       setDeleteClientModalOpen(false);
       setSelectedClient(null);
@@ -156,6 +153,7 @@ export function Clients() {
     }
   };
 
+  // Se não for admin
   if (userType !== "admin") {
     return (
       <div className="mt-7 sm:mt-13 ml-6 lg:ml-12">
@@ -198,16 +196,14 @@ export function Clients() {
         {/* Linhas de clientes */}
         {clients.length > 0 ? (
           clients.map(c => {
-            // 📸 Formata a URL da foto para exibição na lista
             const photoUrlList = getFullPhotoUrl(c.photoUrl);
 
             return (
               <li key={c.id} className="w-full grid grid-cols-3 gap-4 border-b border-gray-500 py-2 px-3 items-center">
                 <div className="flex items-center gap-2">
-                  {/* Verifica se photoUrlList não é undefined antes de renderizar */}
                   {photoUrlList && (
                     <img
-                      src={photoUrlList} // <-- USANDO A URL FORMATADA (string | undefined)
+                      src={photoUrlList}
                       alt={c.name}
                       className="w-7 h-7 rounded-full object-cover"
                     />
@@ -218,7 +214,6 @@ export function Clients() {
                 <span className="truncate">{c.email}</span>
 
                 <div className="flex justify-end gap-2">
-                  {/* Excluir */}
                   <button
                     onClick={() => {
                       setSelectedClientId(c.id);
@@ -230,7 +225,6 @@ export function Clients() {
                     <img src={Trash} alt="trash" className="w-3.5 h-3.5" />
                   </button>
 
-                  {/* Editar */}
                   <button
                     onClick={() => handleEditClick(c)}
                     className="inline-flex items-center justify-center w-7 h-7 bg-gray-500 hover:bg-gray-400 cursor-pointer rounded-sm"
@@ -248,7 +242,8 @@ export function Clients() {
         )}
       </ul>
 
-      {/* Modal Excluir */}
+      {/* Modais */}
+      {/* Excluir */}
       {deleteClientModalOpen && selectedClient && (
         <div className="fixed inset-0 bg-modal/50 flex items-center justify-center z-50">
           <div className="bg-gray-600 w-[90%] max-w-[440px] shadow-xl rounded-[10px] overflow-hidden">
@@ -289,7 +284,7 @@ export function Clients() {
         </div>
       )}
 
-      {/* Modal Editar */}
+      {/* Editar */}
       {editClientModalOpen && selectedClient && (
         <div className="fixed inset-0 bg-modal/50 flex items-center justify-center z-50">
           <div className="bg-gray-600 w-[90%] max-w-[440px] shadow-xl rounded-[10px] overflow-hidden">
@@ -306,16 +301,13 @@ export function Clients() {
             </div>
 
             <div className="flex flex-col px-7 pb-8 pt-7 border-b border-gray-500">
-              {/* 📸 Formata a URL da foto para exibição no modal */}
-              {/* Verifica se o retorno da função não é undefined antes de renderizar */}
               {getFullPhotoUrl(selectedClient.photoUrl) && (
                 <img
-                  src={getFullPhotoUrl(selectedClient.photoUrl)} // <-- USANDO A URL FORMATADA (string | undefined)
+                  src={getFullPhotoUrl(selectedClient.photoUrl)}
                   alt="Cliente"
                   className="w-20 h-20 rounded-full object-cover mb-4"
                 />
               )}
-
 
               <label className="text-gray-300 text-xxs mb-1">Nome</label>
               <input
