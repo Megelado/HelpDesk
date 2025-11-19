@@ -11,17 +11,14 @@ const App = express();
 App.use(express.json());
 
 // Configuração CORS
-App.use(
-  cors({
-    origin: [
-      "http://localhost:5173", // frontend dev
-      "https://help-desk-rust.vercel.app/", 
-      "https://help-desk-4yre8xwo4-michael-silvas-projects-fe86af8d.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-  })
-);
+App.options("*", cors({
+  origin: [
+    "http://localhost:5173",
+    "https://help-desk-rust.vercel.app",
+    "https://help-desk-4yre8xwo4-michael-silvas-projects-fe86af8d.vercel.app"
+  ],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 // Rotas estáticas de uploads
 App.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
