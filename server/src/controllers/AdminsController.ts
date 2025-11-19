@@ -23,7 +23,7 @@ class AdminsController {
     const bodySchema = z.object({
       name: z.string().trim().min(2),
       email: z.string().email(),
-      password: z.string().min(6),
+      password: z.string().min(6).max(32),
     });
 
     const { name, email, password } = bodySchema.parse(request.body);

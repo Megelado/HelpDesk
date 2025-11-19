@@ -29,7 +29,7 @@ class TechniciansController {
     const bodySchema = z.object({
       name: z.string().trim().min(2),
       email: z.string().email(),
-      password: z.string().min(6),
+      password: z.string().min(6).max(32),
       availability: z
         .array(z.string(), { required_error: "Disponibilidade é obrigatória." })
         .nonempty("O array de disponibilidade não pode estar vazio."),
