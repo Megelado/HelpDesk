@@ -119,7 +119,7 @@ export function Technicians() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado!");
 
-      const response = await fetch(`${API_URL}/technicians/${id}/delete`, {
+      const response = await fetch(`${API_URL}technicians/${id}/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
