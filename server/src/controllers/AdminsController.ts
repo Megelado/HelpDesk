@@ -10,7 +10,7 @@ import path from "path";
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3333';
 class AdminsController {
 
-  private formatClientPhotoUrl(admin: Admin): Omit<Admin, 'password'> {
+  private formatAdminPhotoUrl(admin: Admin): Omit<Admin, 'password'> {
       const { password, ...clientData } = admin;
       const photoUrl = admin.photoUrl
         ? `${BASE_URL}${admin.photoUrl.startsWith('/') ? '' : '/'}${admin.photoUrl}`
@@ -42,9 +42,9 @@ class AdminsController {
       data: { name, email, password: hashedPassword },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const userFormatted = this.formatAdminPhotoUrl(user);
 
-    return response.status(201).json(userWithoutPassword);
+    return response.status(201).json(userFormatted);
   }
 
   async index(request: Request, response: Response) {
@@ -55,6 +55,7 @@ class AdminsController {
         email: true,
         createdAt: true,
         updatedAt: true,
+        password: true
       }
 
     })
