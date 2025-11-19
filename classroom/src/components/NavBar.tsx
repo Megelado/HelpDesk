@@ -64,7 +64,7 @@ export function Navbar() {
   const API_URL = import.meta.env.VITE_API_URL.replace(/\/+$/, "");
   const defaultAvatar = "/assets/Avatar.png"; // pasta public do frontend
   const avatarToShow = userPhoto
-    ? (userPhoto.startsWith("http") ? userPhoto : `${API_URL}/${userPhoto}`)
+    ? (userPhoto.startsWith("http") ? userPhoto : `${API_URL}${userPhoto}`)
     : defaultAvatar;
 
 
