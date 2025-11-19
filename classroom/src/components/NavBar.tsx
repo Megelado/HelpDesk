@@ -154,18 +154,18 @@ export function Navbar() {
     let deleteUrl = "";
 
     if (localUserType === "client") {
-      uploadUrl = `${API_URL}/clients/${userId}/photo/upload`;
-      deleteUrl = `${API_URL}/clients/${userId}/photo/remove`;
+      uploadUrl = `${API_URL}clients/${userId}/photo/upload`;
+      deleteUrl = `${API_URL}clients/${userId}/photo/remove`;
     }
 
     if (localUserType === "technician") {
-      uploadUrl = `${API_URL}/technicians/${userId}/photo/upload`;
-      deleteUrl = `${API_URL}/technicians/${userId}/photo/remove`;
+      uploadUrl = `${API_URL}technicians/${userId}/photo/upload`;
+      deleteUrl = `${API_URL}technicians/${userId}/photo/remove`;
     }
 
     if (localUserType === "admin") {
-      uploadUrl = `${API_URL}/admins/${userId}/photo/upload`;
-      deleteUrl = `${API_URL}/admins/${userId}/photo/remove`;
+      uploadUrl = `${API_URL}admins/${userId}/photo/upload`;
+      deleteUrl = `${API_URL}admins/${userId}/photo/remove`;
     }
 
     // === DELETAR FOTO
@@ -220,7 +220,7 @@ export function Navbar() {
       return;
     }
 
-    const url = `${API_URL}/${userType}s/${userId}/password`;
+    const url = `${API_URL}${userType}s/${userId}/password`;
 
     const response = await fetch(url, {
       method: "PUT",
