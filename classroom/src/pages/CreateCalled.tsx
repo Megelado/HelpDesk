@@ -14,6 +14,7 @@ interface Service {
 }
 
 export function CreateCalled() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   // Dados do chamado
@@ -49,7 +50,7 @@ export function CreateCalled() {
 
     const fetchServices = async () => {
       try {
-        const res = await fetch("http://localhost:3333/services", {
+        const res = await fetch(`${API_URL}/services`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -91,7 +92,7 @@ export function CreateCalled() {
         clientId,
       };
 
-      const response = await fetch("http://localhost:3333/calleds", {
+      const response = await fetch(`${API_URL}/calleds`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

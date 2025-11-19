@@ -47,6 +47,7 @@ interface Called {
 
 
 export function DetailsCalleds() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [called, setCalled] = useState<Called | null>(null);
 
@@ -73,7 +74,7 @@ export function DetailsCalleds() {
       }
 
       try {
-        let url = `http://localhost:3333/calleds/details/${id}`;
+        let url = `${API_URL}/calleds/details/${id}`;
 
         const response = await fetch(url, {
           headers: {
@@ -127,7 +128,7 @@ export function DetailsCalleds() {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:3333/services/${id}/delete`, {
+      await fetch(`${API_URL}/services/${id}/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -171,7 +172,7 @@ export function DetailsCalleds() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`http://localhost:3333/calleds/${id}/status`, {
+      const response = await fetch(`${API_URL}/calleds/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -219,7 +220,7 @@ export function DetailsCalleds() {
         isDefault: false
       };
 
-      const response = await fetch(`http://localhost:3333/services/additional_service/${called?.id}`, {
+      const response = await fetch(`${API_URL}/services/additional_service/${called?.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

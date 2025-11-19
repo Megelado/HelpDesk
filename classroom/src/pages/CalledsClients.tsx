@@ -7,6 +7,7 @@ import PenLine from "../assets/icons/pen-line.svg";
 import Eye from "../assets/icons/eye.svg"
 
 export function CalledsClients() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [calleds, setCalleds] = useState<any[]>([]);
   const [userType] = useState(localStorage.getItem("userType") || "");
@@ -20,9 +21,9 @@ export function CalledsClients() {
       }
 
       try {
-        let url = "http://localhost:3333/calleds";
-        if (userType === "client") url = "http://localhost:3333/calleds/client";
-        if (userType === "technician") url = "http://localhost:3333/calleds/technician";
+        let url = `${API_URL}/calleds`;
+        if (userType === "client") url = `${API_URL}/calleds/client`;
+        if (userType === "technician") url = `${API_URL}/calleds/technician`;
 
         const response = await fetch(url, {
           headers: {

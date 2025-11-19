@@ -15,6 +15,7 @@ import TrashRed from "../assets/icons/trash.svg";
 
 
 export function Services() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [calleds, setCalleds] = useState<any[]>([]);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export function Services() {
       }
 
       try {
-        const url = "http://localhost:3333/services";
+        const url = `${API_URL}/services`;
 
         const response = await fetch(url, {
           headers: {
@@ -81,11 +82,11 @@ export function Services() {
 
       if (newStatus === false) {
         // DESATIVAR
-        url = `http://localhost:3333/services/${idStr}`;
+        url = `${API_URL}/services/${idStr}`;
         method = "DELETE";
       } else {
         // REATIVAR
-        url = `http://localhost:3333/services/${idStr}/reactivate`;
+        url = `${API_URL}/services/${idStr}/reactivate`;
         method = "PATCH";
       }
 
@@ -142,7 +143,7 @@ export function Services() {
         isDefault: true
       };
 
-      const response = await fetch(`http://localhost:3333/services/`, {
+      const response = await fetch(`${API_URL}/services/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -178,7 +179,7 @@ export function Services() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado!");
       
-      const response = await fetch(`http://localhost:3333/services/${id}/delete`, {
+      const response = await fetch(`${API_URL}/services/${id}/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +226,7 @@ export function Services() {
 
 
 
-      const response = await fetch(`http://localhost:3333/services/${editingServiceId}`, {
+      const response = await fetch(`${API_URL}/services/${editingServiceId}`, {
         method: "PATCH", 
         headers: {
           "Content-Type": "application/json",

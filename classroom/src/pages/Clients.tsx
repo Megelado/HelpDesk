@@ -28,6 +28,7 @@ const getFullPhotoUrl = (url?: string | null): string | undefined => {
 };
 
 export function Clients() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [clients, setClients] = useState<Client[]>([]);
   const navigate = useNavigate();
   const [userType] = useState(localStorage.getItem("userType") || "");
@@ -53,8 +54,8 @@ export function Clients() {
 
       try {
         const url = userType === "admin"
-          ? "http://localhost:3333/clients"
-          : "http://localhost:3333/services";
+          ? `${API_URL}/clients`
+          : `${API_URL}/services`;
 
         const response = await fetch(url, {
           headers: {
@@ -98,7 +99,7 @@ export function Clients() {
 
       const body = { name: editName, email: editEmail };
 
-      const response = await fetch(`http://localhost:3333/clients/${selectedClientId}`, {
+      const response = await fetch(`API_URL/clients/${selectedClientId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -137,7 +138,7 @@ export function Clients() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado!");
 
-      await fetch(`http://localhost:3333/clients/${id}`, {
+      await fetch(`API_URL/clients/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
