@@ -15,7 +15,7 @@ App.use(
   cors({
     origin: [
       "http://localhost:5173", // frontend dev
-      "https://help-desk-rust.vercel.app", 
+      "https://help-desk-rust.vercel.app/", 
       "https://help-desk-4yre8xwo4-michael-silvas-projects-fe86af8d.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
