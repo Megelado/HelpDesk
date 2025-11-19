@@ -7,21 +7,16 @@ import { Prisma, Client } from "@prisma/client"
 import fs from "fs/promises";
 import path from "path";
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3333';
 class ClientsController {
 
   private formatClientPhotoUrl(client: Client): Omit<Client, 'password'> {
-    const baseUrl = `http://localhost:3333`;
-
     const { password, ...clientData } = client;
-
     const photoUrl = client.photoUrl
-      ? `${baseUrl}${client.photoUrl.startsWith('/') ? '' : '/'}${client.photoUrl}`
+      ? `${BASE_URL}${client.photoUrl.startsWith('/') ? '' : '/'}${client.photoUrl}`
       : null;
 
-    return {
-      ...clientData,
-      photoUrl,
-    };
+    return { ...clientData, photoUrl };
   }
 
   async create(request: Request, response: Response) {
@@ -214,7 +209,7 @@ class ClientsController {
       const uploadFolder = path.resolve(__dirname, '..', '..', '..', 'uploads');
       const oldFileName = client.photoUrl.split('/').pop() as string;
       const oldFilePath = path.join(uploadFolder, 'clients', oldFileName);
-      
+
       try {
         await fs.unlink(oldFilePath);
         console.log(`Foto antiga excluída: ${oldFilePath}`);
@@ -254,7 +249,7 @@ class ClientsController {
     if (!userId) {
       return response.status(401).json({ message: "Usuário não autenticado" });
     }
-    
+
     // VERIFICAÇÃO DE AUTORIZAÇÃO
     if (userType !== "admin" && (userType !== "client" || userId !== clientId)) {
       return response.status(403).json({ message: "Você não tem permissão para remover esta imagem" });
@@ -300,7 +295,7 @@ class ClientsController {
           password: true
         }
       });
-      
+
       const clientFormatted = this.formatClientPhotoUrl(updatedClient);
 
       return response.status(200).json({

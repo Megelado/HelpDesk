@@ -3,11 +3,21 @@ import { Request, Response } from "express";
 import { prisma } from "@/database/Prisma";
 import { z } from "zod";
 import { hash } from "bcrypt";
-import { Prisma } from "@prisma/client";
+import { Prisma, Admin } from "@prisma/client";
 import fs from "fs/promises";
 import path from "path";
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3333';
 class AdminsController {
+
+  private formatClientPhotoUrl(admin: Admin): Omit<Admin, 'password'> {
+      const { password, ...clientData } = admin;
+      const photoUrl = admin.photoUrl
+        ? `${BASE_URL}${admin.photoUrl.startsWith('/') ? '' : '/'}${admin.photoUrl}`
+        : null;
+  
+      return { ...clientData, photoUrl };
+    }
   async create(request: Request, response: Response) {
 
     const bodySchema = z.object({

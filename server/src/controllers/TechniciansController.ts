@@ -2,24 +2,21 @@ import { AppError } from "@/utils/AppError";
 import { Request, Response } from "express";
 import { prisma } from "@/database/Prisma";
 import { z } from "zod";
-import { hash, compare } from "bcrypt";
-import { downloadImageFromUrl } from "@/utils/DownloadImageFromUrl";
+import { hash } from "bcrypt";
 import { Prisma, Technician } from "@prisma/client"
-import { technicianAvailability } from "@/utils/TechnicianAvailability";
 import fs from "fs/promises";
 import path from "path";
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3333';
 class TechniciansController {
 
   private formatTechnicianPhotoUrl(technician: Technician): Omit<Technician, 'password'> {
-    const baseUrl = `http://localhost:3333`;
-
     // Garante que a senha seja removida do objeto retornado
     const { password, ...technicianData } = technician;
 
     // Constrói a URL completa da foto
     const photoUrl = technician.photoUrl
-      ? `${baseUrl}${technician.photoUrl.startsWith('/') ? '' : '/'}${technician.photoUrl}`
+      ? `${BASE_URL}${technician.photoUrl.startsWith('/') ? '' : '/'}${technician.photoUrl}`
       : null;
 
     return {

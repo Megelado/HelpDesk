@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import { upload } from "@/configs/Multer";
-import multer from "multer";
 
 export class UploadController {
   async handle(req: Request, res: Response) {
