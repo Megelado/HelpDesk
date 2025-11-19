@@ -50,7 +50,7 @@ export function CreateCalled() {
 
     const fetchServices = async () => {
       try {
-        const res = await fetch(`${API_URL}/services`, {
+        const res = await fetch(`${API_URL}services`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -92,7 +92,7 @@ export function CreateCalled() {
         clientId,
       };
 
-      const response = await fetch(`${API_URL}/calleds`, {
+      const response = await fetch(`${API_URL}calleds`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

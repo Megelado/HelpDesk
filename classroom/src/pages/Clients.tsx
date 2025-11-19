@@ -54,8 +54,8 @@ export function Clients() {
 
       try {
         const url = userType === "admin"
-          ? `${API_URL}/clients`
-          : `${API_URL}/services`;
+          ? `${API_URL}clients`
+          : `${API_URL}services`;
 
         const response = await fetch(url, {
           headers: {
@@ -99,7 +99,7 @@ export function Clients() {
 
       const body = { name: editName, email: editEmail };
 
-      const response = await fetch(`API_URL/clients/${selectedClientId}`, {
+      const response = await fetch(`${API_URL}clients/${selectedClientId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export function Clients() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado!");
 
-      await fetch(`API_URL/clients/${id}`, {
+      await fetch(`${API_URL}clients/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

@@ -37,7 +37,7 @@ export function EditTechnician() {
       }
 
       try {
-        let url = `${API_URL}/technicians/details/${id}`;
+        let url = `${API_URL}technicians/details/${id}`;
 
         const response = await fetch(url, {
           headers: {

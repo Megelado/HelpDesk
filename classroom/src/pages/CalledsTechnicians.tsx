@@ -22,8 +22,8 @@ export function CalledsTechnicians() {
       }
 
       try {
-        let url = "API_URL/calleds";
-        if (userType === "technician") url = `${API_URL}/calleds/technician`;
+        let url = `${API_URL}calleds`;
+        if (userType === "technician") url = `${API_URL}calleds/technician`;
 
         const response = await fetch(url, {
           headers: {
@@ -68,7 +68,7 @@ export function CalledsTechnicians() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`${API_URL}/calleds/${id}/status`, {
+      const response = await fetch(`${API_URL}calleds/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

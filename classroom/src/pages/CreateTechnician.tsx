@@ -49,7 +49,7 @@ export function CreateTechnician() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado!");
 
-      const response = await fetch(`${API_URL}/technicians`, {
+      const response = await fetch(`${API_URL}technicians`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

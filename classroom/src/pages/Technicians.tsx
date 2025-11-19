@@ -39,7 +39,7 @@ export function Technicians() {
       }
 
       try {
-        const url = `${API_URL}/technicians`;
+        const url = `${API_URL}technicians`;
 
         const response = await fetch(url, {
           headers: {

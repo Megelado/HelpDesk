@@ -74,7 +74,7 @@ export function DetailsCalleds() {
       }
 
       try {
-        let url = `${API_URL}/calleds/details/${id}`;
+        let url = `${API_URL}calleds/details/${id}`;
 
         const response = await fetch(url, {
           headers: {
@@ -128,7 +128,7 @@ export function DetailsCalleds() {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`${API_URL}/services/${id}/delete`, {
+      await fetch(`${API_URL}services/${id}/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
