@@ -98,35 +98,45 @@ class CalledsController {
         return response.status(401).json({ message: "Usuário não autenticado." });
       }
 
-      const where =
-        user.type === "client" ? { clientId: user.id } : {};
+      const where = user.type === "client" ? { clientId: user.id } : {};
 
       const calleds = await prisma.called.findMany({
         where,
         include: {
           services: true,
-          technician: {
-            select: { name: true, photoUrl: true },
-          },
+          technician: { select: { name: true, photoUrl: true } },
+          client: { select: { name: true, photoUrl: true } },
         },
         orderBy: { createdAt: "desc" },
       });
 
-      const calledsWithTotal = calleds.map((called) => ({
+      const baseUrl = `${request.protocol}://${request.get("host")}`;
+
+      const formatted = calleds.map((called) => ({
         ...called,
         totalPrice: called.services.reduce(
           (sum, service) => sum + Number(service.price),
           0
         ),
-        technician: {
-          ...called.technician,
-          photoUrl: called.technician?.photoUrl
-            ? `http://localhost:3333${called.technician.photoUrl}`
-            : null,
-        },
+        client: called.client
+          ? {
+            ...called.client,
+            photoUrl: called.client.photoUrl
+              ? `${baseUrl}${called.client.photoUrl}`
+              : null,
+          }
+          : null,
+        technician: called.technician
+          ? {
+            ...called.technician,
+            photoUrl: called.technician.photoUrl
+              ? `${baseUrl}${called.technician.photoUrl}`
+              : null,
+          }
+          : null,
       }));
 
-      return response.json(calledsWithTotal);
+      return response.json(formatted);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return response.status(400).json({ errors: error.errors });
@@ -134,6 +144,7 @@ class CalledsController {
       throw error;
     }
   }
+
 
   // ======================
   // LISTAR CHAMADOS DO TÉCNICO
@@ -146,49 +157,51 @@ class CalledsController {
         return response.status(401).json({ message: "Usuário não autenticado." });
       }
 
-      const where =
-        user.type === "technician" ? { technicianId: user.id } : {};
+      const where = user.type === "technician" ? { technicianId: user.id } : {};
 
       const calleds = await prisma.called.findMany({
         where,
         include: {
           services: true,
-          client: {
-            select: { name: true, photoUrl: true },
-          },
-          technician: {
-            select: { name: true, photoUrl: true },
-          },
+          client: { select: { name: true, photoUrl: true } },
+          technician: { select: { name: true, photoUrl: true } },
         },
         orderBy: { createdAt: "desc" },
       });
 
-      const calledsWithTotal = calleds.map((called) => ({
+      const baseUrl = `${request.protocol}://${request.get("host")}`;
+
+      const formatted = calleds.map((called) => ({
         ...called,
         totalPrice: called.services.reduce(
           (sum, service) => sum + Number(service.price),
           0
         ),
-        client: {
-          ...called.client,
-          photoUrl: called.client?.photoUrl
-            ? `http://localhost:3333${called.client.photoUrl}`
-            : null,
-        },
-        technician: {
-          ...called.technician,
-          photoUrl: called.technician?.photoUrl
-            ? `http://localhost:3333${called.technician.photoUrl}`
-            : null,
-        },
+        client: called.client
+          ? {
+            ...called.client,
+            photoUrl: called.client.photoUrl
+              ? `${baseUrl}${called.client.photoUrl}`
+              : null,
+          }
+          : null,
+        technician: called.technician
+          ? {
+            ...called.technician,
+            photoUrl: called.technician.photoUrl
+              ? `${baseUrl}${called.technician.photoUrl}`
+              : null,
+          }
+          : null,
       }));
 
-      return response.json(calledsWithTotal);
+      return response.json(formatted);
     } catch (error) {
       console.error(error);
       return response.status(500).json({ message: "Erro ao listar chamados." });
     }
   }
+
 
   // ======================
   // LISTAR CHAMADOS PARA ADMIN
@@ -198,42 +211,45 @@ class CalledsController {
       const calleds = await prisma.called.findMany({
         include: {
           services: true,
-          client: {
-            select: { name: true, photoUrl: true },
-          },
-          technician: {
-            select: { name: true, photoUrl: true },
-          },
+          client: { select: { name: true, photoUrl: true } },
+          technician: { select: { name: true, photoUrl: true } },
         },
         orderBy: { createdAt: "desc" },
       });
 
-      const calledsWithTotal = calleds.map((called) => ({
+      const baseUrl = `${request.protocol}://${request.get("host")}`;
+
+      const formatted = calleds.map((called) => ({
         ...called,
         totalPrice: called.services.reduce(
           (sum, service) => sum + Number(service.price),
           0
         ),
-        client: {
-          ...called.client,
-          photoUrl: called.client?.photoUrl
-            ? `http://localhost:3333${called.client.photoUrl}`
-            : null,
-        },
-        technician: {
-          ...called.technician,
-          photoUrl: called.technician?.photoUrl
-            ? `http://localhost:3333${called.technician.photoUrl}`
-            : null,
-        },
+        client: called.client
+          ? {
+            ...called.client,
+            photoUrl: called.client.photoUrl
+              ? `${baseUrl}${called.client.photoUrl}`
+              : null,
+          }
+          : null,
+        technician: called.technician
+          ? {
+            ...called.technician,
+            photoUrl: called.technician.photoUrl
+              ? `${baseUrl}${called.technician.photoUrl}`
+              : null,
+          }
+          : null,
       }));
 
-      return response.json(calledsWithTotal);
+      return response.json(formatted);
     } catch (error) {
       console.error(error);
       return response.status(500).json({ message: "Erro ao listar chamados." });
     }
   }
+
 
   // ======================
   // DETALHES DO CHAMADO
