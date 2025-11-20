@@ -40,7 +40,15 @@ export function Login() {
       localStorage.setItem("userName", data.user.name);
       localStorage.setItem("userEmail", data.user.email);
       // Foto do usuário
-      localStorage.setItem("userPhoto", data.user.photoUrl || "");
+      const rawPhoto = data.user.photoUrl;
+      const normalizedPhoto = rawPhoto
+        ? (rawPhoto.startsWith("http")
+          ? rawPhoto
+          : `${API_URL}${rawPhoto.startsWith("/") ? "" : "/"}${rawPhoto}`)
+        : "";
+
+      localStorage.setItem("userPhoto", normalizedPhoto);
+
       if (Array.isArray(data.user.availability)) {
         localStorage.setItem("availability", JSON.stringify(data.user.availability));
       } else {
