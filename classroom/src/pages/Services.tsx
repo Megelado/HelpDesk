@@ -417,7 +417,7 @@ export function Services() {
             })
           ) : (
             <li className="text-gray-400 italic text-center py-4 border-b border-gray-600">
-              Nenhum chamado encontrado.
+              Nenhum serviço encontrado.
             </li>
           )}
 
