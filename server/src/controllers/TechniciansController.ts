@@ -6,8 +6,8 @@ import { hash } from "bcrypt";
 import { Prisma, Technician } from "@prisma/client"
 import fs from "fs/promises";
 import path from "path";
+import {getBaseUrl} from "@/utils/getBaseUrl"
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3333';
 class TechniciansController {
 
   private formatTechnicianPhotoUrl(technician: Technician): Omit<Technician, 'password'> {
@@ -16,7 +16,7 @@ class TechniciansController {
 
     // Constrói a URL completa da foto
     const photoUrl = technician.photoUrl
-      ? `${BASE_URL}${technician.photoUrl.startsWith('/') ? '' : '/'}${technician.photoUrl}`
+      ? `${getBaseUrl()}${technician.photoUrl.startsWith('/') ? '' : '/'}${technician.photoUrl}`
       : null;
 
     return {
@@ -80,6 +80,8 @@ class TechniciansController {
     const techniciansWithFullPhotoUrl = technicians.map(technician => this.formatTechnicianPhotoUrl(technician));
 
     return response.json(techniciansWithFullPhotoUrl);
+    // const adminsFormatted = admins.map(admin => this.formatAdminPhotoUrl(admin));
+    // return response.json(adminsFormatted);
   }
 
   async details(request: Request, response: Response) {

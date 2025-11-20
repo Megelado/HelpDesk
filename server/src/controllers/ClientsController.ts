@@ -6,14 +6,14 @@ import { hash } from "bcrypt";
 import { Prisma, Client } from "@prisma/client"
 import fs from "fs/promises";
 import path from "path";
+import {getBaseUrl} from "@/utils/getBaseUrl"
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3333';
 class ClientsController {
 
   private formatClientPhotoUrl(client: Client): Omit<Client, 'password'> {
     const { password, ...clientData } = client;
     const photoUrl = client.photoUrl
-      ? `${BASE_URL}${client.photoUrl.startsWith('/') ? '' : '/'}${client.photoUrl}`
+      ? `${getBaseUrl()}${client.photoUrl.startsWith('/') ? '' : '/'}${client.photoUrl}`
       : null;
 
     return { ...clientData, photoUrl };
