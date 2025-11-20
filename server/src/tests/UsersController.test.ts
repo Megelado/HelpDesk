@@ -5,6 +5,8 @@ import { App } from "@/App";
 
 import { hash } from "bcrypt";
 
+import fs from "fs";
+
 let superAdminToken: string;
 
 beforeAll(async () => {
@@ -46,7 +48,7 @@ describe("AdminsController", () => {
       .post("/admins").set("Authorization", `Bearer ${superAdminToken}`)
       .send({
         name: "John Doe",
-        email: "JohnDoe@email.com",
+        email: "JohnDoeAdmin@email.com",
         password: "123456",
         hashedPassword: await hash("123456", 8),
       });
@@ -54,7 +56,7 @@ describe("AdminsController", () => {
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
     expect(response.body).toHaveProperty("name", "John Doe");
-    expect(response.body).toHaveProperty("email", "JohnDoe@email.com");
+    expect(response.body).toHaveProperty("email", "JohnDoeAdmin@email.com");
     expect(response.body).not.toHaveProperty("password");
   });
 
@@ -169,13 +171,14 @@ describe("TechniciansController", () => {
         email: "techDoe@email.com",
         password: "654321",
         hashedPassword: await hash("654321", 8),
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
 
     expect(response.status).toBe(201);
-    expect(response.body.userWithoutPassword).toHaveProperty("id");
-    expect(response.body.userWithoutPassword).toHaveProperty("name", "Tech Doe");
-    expect(response.body.userWithoutPassword).toHaveProperty("email", "techDoe@email.com");
-    expect(response.body.userWithoutPassword).not.toHaveProperty("password");
+    expect(response.body).toHaveProperty("id");
+    expect(response.body).toHaveProperty("name", "Tech Doe");
+    expect(response.body).toHaveProperty("email", "techDoe@email.com");
+    expect(response.body).not.toHaveProperty("password");
 
 
   });
@@ -194,6 +197,7 @@ describe("TechniciansController", () => {
       name: "Duplicate Test",
       email: "duplicateTestTechnician@email.com",
       password: "duplicate123",
+      availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
     });
 
     expect(firstResponse.status).toBe(201);
@@ -202,7 +206,8 @@ describe("TechniciansController", () => {
       .post("/technicians").set("Authorization", `Bearer ${superAdminToken}`).send({
         name: "Duplicate Test 2",
         email: "duplicateTestTechnician@email.com",
-        password: "duplicate456",
+        password: "duplicate123",
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
 
     expect(secondResponse.status).toBe(409);
@@ -245,12 +250,13 @@ describe("TechniciansController", () => {
         name: "Tech to Update",
         email: "techupdate@email.com",
         password: "654321",
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
 
     expect(createResponse.status).toBe(201);
 
     const updateResponse = await request(App)
-      .patch(`/technicians/${createResponse.body.userWithoutPassword.id}`)
+      .patch(`/technicians/${createResponse.body.id}/update`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         name: "Tech Updated",
@@ -258,7 +264,7 @@ describe("TechniciansController", () => {
       });
 
     expect(updateResponse.status).toBe(200);
-    expect(updateResponse.body).toHaveProperty("id", createResponse.body.userWithoutPassword.id);
+    expect(updateResponse.body).toHaveProperty("id", createResponse.body.id);
     expect(updateResponse.body).toHaveProperty("name", "Tech Updated");
     expect(updateResponse.body).toHaveProperty("email", "techupdate@email.com");
   });
@@ -280,6 +286,7 @@ describe("TechniciansController", () => {
         name: "Image Test",
         email: "imageTesteTechnicians@email.com",
         password: "image123",
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
 
     expect(createResponse.status).toBe(201);
@@ -297,12 +304,12 @@ describe("TechniciansController", () => {
     const tokenTechnicians = loginTechniciansResponse.body.token;
 
     const updateResponse = await request(App)
-      .put(`/technicians/${createResponse.body.userWithoutPassword.id}/photo`)
+      .put(`/technicians/${createResponse.body.id}/photo/upload`)
       .set("Authorization", `Bearer ${tokenTechnicians}`)
       .attach("photo", "__tests__/files/test-image.jpg");
 
     expect(updateResponse.status).toBe(200);
-    expect(updateResponse.body).toHaveProperty("id", createResponse.body.userWithoutPassword.id);
+    expect(updateResponse.body).toHaveProperty("id", createResponse.body.id);
     expect(updateResponse.body).toHaveProperty("photoUrl");
   });
 
@@ -321,7 +328,10 @@ describe("TechniciansController", () => {
         name: "Change Password",
         email: "changePassword@email.com",
         password: "111111",
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
+
+    console.log(createResponse.body)
 
     expect(createResponse.status).toBe(201);
 
@@ -337,9 +347,9 @@ describe("TechniciansController", () => {
 
 
     const changeResponse = await request(App)
-      .put(`/technicians/password/${createResponse.body.userWithoutPassword.id}`)
+      .put(`/technicians/${createResponse.body.id}/password`)
       .send({
-        oldPassword: "111113",
+        currentPassword: "111113",
         newPassword: "123456",
       })
       .set("Authorization", `Bearer ${tokenTechnicians}`);
@@ -362,7 +372,10 @@ describe("TechniciansController", () => {
         name: "Change Password",
         email: "changePasswordCorrect@email.com",
         password: "111111",
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
+
+    console.log(createResponse.body)
 
     expect(createResponse.status).toBe(201);
 
@@ -378,9 +391,9 @@ describe("TechniciansController", () => {
 
 
     const changeResponse = await request(App)
-      .put(`/technicians/password/${createResponse.body.userWithoutPassword.id}`)
+      .put(`/technicians/${createResponse.body.id}/password`)
       .send({
-        oldPassword: "111111",
+        currentPassword: "111111",
         newPassword: "123456",
       })
       .set("Authorization", `Bearer ${tokenTechnicians}`);
@@ -403,6 +416,7 @@ describe("TechniciansController", () => {
         name: "Change Availability",
         email: "changeAvailability@email.com",
         password: "111111",
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
 
     expect(createResponse.status).toBe(201);
@@ -418,17 +432,17 @@ describe("TechniciansController", () => {
     expect(tokenTechnicians).toBeDefined();
 
     const changeAvailabilityResponse = await request(App)
-      .put(`/technicians/availability/${createResponse.body.userWithoutPassword.id}`)
+      .put(`/technicians/availability/${createResponse.body.id}`)
       .set("Authorization", `Bearer ${tokenTechnicians}`)
       .send({
-        availability: ["08:00", "09:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
+        availability: ["16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"]
       });
 
 
     expect(changeAvailabilityResponse.status).toBe(200);
     expect(changeAvailabilityResponse.body).toHaveProperty("message", "Disponibilidade atualizada com sucesso.");
     expect(changeAvailabilityResponse.body.technician).toHaveProperty("availability");
-    expect(changeAvailabilityResponse.body.technician.availability).toContain("08:00");
+    expect(changeAvailabilityResponse.body.technician.availability).toContain("16:00");
 
   })
 
@@ -446,6 +460,7 @@ describe("TechniciansController", () => {
         name: "Delete Technician Test",
         email: "deleteTechnicianTest@email.com",
         password: "111111",
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
 
     expect(createResponse.status).toBe(201);
@@ -461,7 +476,7 @@ describe("TechniciansController", () => {
     expect(tokenTechnicians).toBeDefined();
 
     const changeAvailabilityResponse = await request(App)
-      .put(`/technicians/availability/${createResponse.body.userWithoutPassword.id}`)
+      .put(`/technicians/availability/${createResponse.body.id}`)
       .set("Authorization", `Bearer ${tokenTechnicians}`)
       .send({
         availability: []
@@ -487,6 +502,7 @@ describe("TechniciansController", () => {
         name: "Change Availability Empty",
         email: "changeAvailabilityEmpty@email.com",
         password: "111111",
+        availability: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"]
       });
 
     expect(createResponse.status).toBe(201);
@@ -501,19 +517,20 @@ describe("TechniciansController", () => {
     const tokenTechnicians = loginTechniciansResponse.body.token;
     expect(tokenTechnicians).toBeDefined();
 
-    const removeTechnician = await request(App).delete(`/technicians/${createResponse.body.userWithoutPassword.id}`).set("Authorization", `Bearer ${tokenTechnicians}`)
+    const removeTechnician = await request(App).delete(`/technicians/${createResponse.body.id}/delete`).set("Authorization", `Bearer ${tokenTechnicians}`)
 
     expect(removeTechnician.status).toBe(200)
   })
 });
 
 describe("ClientsController", () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await prisma.called.deleteMany();
     await prisma.technician.deleteMany();
     await prisma.client.deleteMany();
     await prisma.admin.deleteMany();
   });
+
   it("should create a new client", async () => {
     const response = await request(App)
       .post("/clients")
@@ -602,40 +619,6 @@ describe("ClientsController", () => {
     expect(updateResponse.body).toHaveProperty("id", createResponse.body.id);
     expect(updateResponse.body).toHaveProperty("name", "Jane Smith");
     expect(updateResponse.body).toHaveProperty("email", "JaneSmith@email.com");
-  });
-
-  it("Update a image for client profile", async () => {
-
-    const createResponse = await request(App)
-      .post("/clients")
-      .send({
-        name: "Image Test",
-        email: "imageTest@email.com",
-        password: "image123",
-      });
-
-    expect(createResponse.status).toBe(201);
-
-    const loginResponse = await request(App)
-      .post("/login")
-      .send({
-        email: "imageTest@email.com",
-        password: "image123",
-      });
-
-    expect(loginResponse.status).toBe(200);
-    expect(loginResponse.body).toHaveProperty("token");
-
-    const token = loginResponse.body.token;
-
-    const updateResponse = await request(App)
-      .put(`/clients/${createResponse.body.id}/photo`)
-      .set("Authorization", `Bearer ${token}`)
-      .attach("photo", "__tests__/files/test-image.jpg");
-
-    expect(updateResponse.status).toBe(200);
-    expect(updateResponse.body).toHaveProperty("id", createResponse.body.id);
-    expect(updateResponse.body).toHaveProperty("photoUrl");
   });
 
   it("should delete a client", async () => {

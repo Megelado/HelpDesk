@@ -170,7 +170,7 @@ class AdminsController {
   }
 
   // UPLOAD PROFILE IMAGE
-  async uploadProfileImage(request: Request, response: Response) {
+  uploadProfileImage = async (request: Request, response: Response) => {
     const { id: adminId } = request.params;
 
     const userId = request.user?.id;
@@ -193,6 +193,7 @@ class AdminsController {
       return response.status(404).json({ message: "Admin não encontrado" });
     }
 
+    // Apagar imagem antiga
     if (admin.photoUrl) {
       const uploadFolder = path.resolve(__dirname, "..", "..", "..", "uploads");
       const filePath = path.join(uploadFolder, "admins", admin.photoUrl.split("/").pop() as string);
@@ -206,19 +207,27 @@ class AdminsController {
       }
     }
 
-    const photoUrl = `/uploads/admins/${request.file.filename}`;
+    const photoUrl = `/upload/admins/${request.file.filename}`;
 
-    const updated = await prisma.admin.update({
-      where: { id: adminId },
-      data: { photoUrl },
-    });
+    try {
+      const updated = await prisma.admin.update({
+        where: { id: adminId },
+        data: { photoUrl },
+      });
 
-    return response.json(this.formatAdminPhotoUrl(updated));
+      const formatted = this.formatAdminPhotoUrl(updated);
+
+      return response.json(formatted);
+    } catch (err) {
+      console.error("ERRO AO ATUALIZAR ADMIN:", err);
+      return response.status(500).json({ message: "Erro interno ao atualizar admin" });
+    }
   }
+
 
   // DELETE PROFILE IMAGE
   async deleteProfileImage(request: Request, response: Response) {
-    const { id: adminId } = request.params;
+    const { adminId } = request.params;
 
     const userId = request.user?.id;
     const userType = request.user?.type;

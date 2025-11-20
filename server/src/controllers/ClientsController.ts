@@ -158,7 +158,6 @@ class ClientsController {
 
         try {
           await fs.unlink(filePath);
-          console.log(`Foto excluída: ${filePath}`);
         } catch (fileError: any) {
           if (fileError.code !== 'ENOENT') {
             console.error(`Erro ao excluir o arquivo ${filePath}:`, fileError);
@@ -212,7 +211,6 @@ class ClientsController {
 
       try {
         await fs.unlink(oldFilePath);
-        console.log(`Foto antiga excluída: ${oldFilePath}`);
       } catch (fileError: any) {
         if (fileError.code !== 'ENOENT') {
           console.error(`Erro ao excluir a foto antiga ${oldFilePath}:`, fileError);
@@ -274,7 +272,6 @@ class ClientsController {
 
       try {
         await fs.unlink(filePath);
-        console.log(`Arquivo de foto do cliente excluído: ${filePath}`);
       } catch (fileError: any) {
         if (fileError.code !== 'ENOENT') {
           console.error(`Erro ao excluir o arquivo ${filePath}:`, fileError);

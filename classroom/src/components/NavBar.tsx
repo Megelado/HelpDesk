@@ -49,6 +49,7 @@ export function Navbar() {
   const [hoverClose, setHoverClose] = useState(false);
   const [uploadHover, setUploadHover] = useState(false);
   const [deletePhoto, setDeletePhoto] = useState(false);
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
 
 
@@ -204,6 +205,7 @@ export function Navbar() {
 
     setDeletePhoto(false);
     setNewPhotoFile(null);
+    setPreviewPhoto(null)
     setProfileModalOpen(false);
     // Recarrega a rota atual sem dar 404
     navigate(location.pathname, { replace: true });
@@ -355,7 +357,12 @@ export function Navbar() {
 
               <button
                 className="w-6 h-6 rounded-[5px] hover:bg-gray-500 flex items-center justify-center"
-                onClick={() => setProfileModalOpen(false)}
+                onClick={() => {
+                  setProfileModalOpen(false);
+                  setPreviewPhoto(null); // reseta o preview
+                  setNewPhotoFile(null);  // descarta o arquivo temporário
+                  setDeletePhoto(false);   // cancela exclusão
+                }}
                 onMouseEnter={() => setHoverClose(true)}
                 onMouseLeave={() => setHoverClose(false)}
               >
@@ -366,7 +373,11 @@ export function Navbar() {
               <div className="p-7 flex items-center gap-4">
 
                 {/* Foto */}
-                <img className="w-12 h-12 rounded-full object-cover" src={avatarToShow} />
+                <img
+                  className="w-12 h-12 rounded-full object-cover"
+                  src={deletePhoto ? defaultAvatar : (previewPhoto || avatarToShow)}
+                />
+
 
                 {/* div dos botões */}
 
@@ -379,11 +390,21 @@ export function Navbar() {
                     ref={fileInputRef}
                     onChange={(e) => {
                       if (e.target.files?.[0]) {
-                        setNewPhotoFile(e.target.files[0]);
+                        const file = e.target.files[0];
+                        setNewPhotoFile(file);
+                        setDeletePhoto(false); // cancela exclusão para mostrar o preview
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setPreviewPhoto(reader.result as string);
+                        };
+                        reader.readAsDataURL(file);
                       }
+
                     }}
                     className="hidden"
                   />
+
 
                   {/* BOTÃO NOVA IMAGEM */}
                   <button
@@ -403,6 +424,7 @@ export function Navbar() {
                     onClick={() => {
                       setDeletePhoto(true);  // marca para apagar
                       setNewPhotoFile(null); // descarta alguma imagem escolhida
+                      setPreviewPhoto(null);      // mostra preview como "vazio" para o usuário
                     }}
                     className="w-7 h-7 rounded-[5px] bg-gray-500 hover:bg-gray-400 flex items-center justify-center cursor-pointer"
                   >
@@ -485,64 +507,67 @@ export function Navbar() {
             </div>
           </div>
         </div>
-      )}
+      )
+      }
 
       {/* MODAL ALTERAR SENHA */}
-      {passwordModalOpen && (
-        <div className="fixed inset-0 bg-modal/50 bg-opacity-40 flex items-center justify-center z-999">
-          <div className="bg-gray-600 w-[90%] max-w-[440px] shadow-xl rounded-[10px]">
+      {
+        passwordModalOpen && (
+          <div className="fixed inset-0 bg-modal/50 bg-opacity-40 flex items-center justify-center z-999">
+            <div className="bg-gray-600 w-[90%] max-w-[440px] shadow-xl rounded-[10px]">
 
-            <div className="flex items-center justify-between border-b border-b-gray-500 px-7 py-5">
-              <span className="text-md text-gray-200">Alterar senha</span>
+              <div className="flex items-center justify-between border-b border-b-gray-500 px-7 py-5">
+                <span className="text-md text-gray-200">Alterar senha</span>
 
-              <button
-                onClick={() => setPasswordModalOpen(false)}
-                className="w-6 h-6 rounded-[5px] hover:bg-gray-500 flex items-center justify-center"
-              >
-                <img src={hoverClose ? CloseHover : CloseDefault} className="w-4.5 h-4.5" />
-              </button>
-            </div>
-
-            <div className="p-7 flex flex-col gap-4">
-
-              <div className="flex flex-col group">
-                <label htmlFor="id_current_password" className="text-xxs text-gray-300 uppercase group-focus-within:text-blue-dark">Senha atual</label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Digite sua senha atual"
-                  name="current_password"
-                  id="id_current_password"
-                  className="w-full mt-2 py-2 rounded text-gray-200   border-b border-b-gray-500 focus:border-b-blue-dark focus:outline-none"
-                />
+                <button
+                  onClick={() => setPasswordModalOpen(false)}
+                  className="w-6 h-6 rounded-[5px] hover:bg-gray-500 flex items-center justify-center"
+                >
+                  <img src={hoverClose ? CloseHover : CloseDefault} className="w-4.5 h-4.5" />
+                </button>
               </div>
 
-              <div className="group">
-                <label htmlFor="id_new_password" className="text-xxs text-gray-300 uppercase group-focus-within:text-blue-dark">Nova senha</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  name="new_password"
-                  id="id_new_password"
-                  placeholder="Digite sua nova senha"
-                  className="w-full mt-2 p-2 rounded border-b border-b-gray-500 text-gray-200 outline-none focus:border-b-blue-dark focus:outline-none"
-                />
+              <div className="p-7 flex flex-col gap-4">
+
+                <div className="flex flex-col group">
+                  <label htmlFor="id_current_password" className="text-xxs text-gray-300 uppercase group-focus-within:text-blue-dark">Senha atual</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Digite sua senha atual"
+                    name="current_password"
+                    id="id_current_password"
+                    className="w-full mt-2 py-2 rounded text-gray-200   border-b border-b-gray-500 focus:border-b-blue-dark focus:outline-none"
+                  />
+                </div>
+
+                <div className="group">
+                  <label htmlFor="id_new_password" className="text-xxs text-gray-300 uppercase group-focus-within:text-blue-dark">Nova senha</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    name="new_password"
+                    id="id_new_password"
+                    placeholder="Digite sua nova senha"
+                    className="w-full mt-2 p-2 rounded border-b border-b-gray-500 text-gray-200 outline-none focus:border-b-blue-dark focus:outline-none"
+                  />
+                </div>
+                <button
+                  onClick={handleChangePassword}
+                  className="group inline-flex items-center justify-center text-xs rounded-[5px] w-auto h-auto py-2.5 gap-1 bg-gray-200 cursor-pointer text-gray-600 hover:bg-gray-100 mt-2"
+                >
+                  <span className="text-sm text-gray-600">Salvar</span>
+                </button>
+
+
               </div>
-              <button
-                onClick={handleChangePassword}
-                className="group inline-flex items-center justify-center text-xs rounded-[5px] w-auto h-auto py-2.5 gap-1 bg-gray-200 cursor-pointer text-gray-600 hover:bg-gray-100 mt-2"
-              >
-                <span className="text-sm text-gray-600">Salvar</span>
-              </button>
-
-
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-    </nav>
+    </nav >
   );
 }

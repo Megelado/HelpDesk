@@ -10,6 +10,8 @@ import { techniciansRoutes } from "./TechniciansRoutes";
 import { adminsRoutes } from "./AdminRoutes";
 import { uploadRoutes } from "./UploadRoutes";
 
+import { ensureAuthenticated } from "@/middlewares/EnsureAuthenticated";
+
 import path from "path";
 import fs from "fs";
 import express from "express";
@@ -45,9 +47,9 @@ routes.use("/calleds", calledsRoutes);
 
 const passwordController = new PasswordController();
 
-routes.put("/admins/:id/password", passwordController.update)
-routes.put("/clients/:id/password", passwordController.update)
-routes.put("/technicians/:id/password", passwordController.update)
+routes.put("/admins/:id/password", ensureAuthenticated, passwordController.update)
+routes.put("/clients/:id/password", ensureAuthenticated, passwordController.update)
+routes.put("/technicians/:id/password", ensureAuthenticated, passwordController.update)
 
 
 

@@ -39,6 +39,7 @@ beforeAll(async () => {
       name: "Technician",
       email: "supertechnician@email.com",
       password: hashedPasswordTechnician,
+      availability: ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00"]
     },
   });
 
@@ -103,7 +104,6 @@ describe("CalledsController", () => {
     const service1 = await prisma.service.create({
       data: { title: "Recuperação de dados", price: 200, active: true },
     });
-
     const service2 = await prisma.service.create({
       data: { title: "Formatação de sistema", price: 150, active: true },
     });
@@ -115,12 +115,12 @@ describe("CalledsController", () => {
       .set("Authorization", `Bearer ${token}`)
       .send({
         title: "Rede lenta",
-        description:
-          "O sistema de backup automático parou de funcionar. Última execução bem-sucedida foi há uma semana.",
+        description: "O sistema de backup automático parou.",
         clientId,
         technicianId,
-        serviceIds
+        serviceIds, // <- usa os IDs exatos criados acima
       });
+
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
@@ -170,7 +170,7 @@ describe("CalledsController", () => {
   })
 
   it("should update services of called successfully", async () => {
-    
+
     const loginClientResponse = await request(App)
       .post("/login")
       .send({
@@ -182,7 +182,7 @@ describe("CalledsController", () => {
     const clientToken = loginClientResponse.body.token;
     const clientId = loginClientResponse.body.user.id;
 
-    
+
     const loginTechnicianResponse = await request(App)
       .post("/login")
       .send({
@@ -194,7 +194,7 @@ describe("CalledsController", () => {
     const technicianToken = loginTechnicianResponse.body.token;
     const technicianId = loginTechnicianResponse.body.user.id;
 
-   
+
     const service1 = await prisma.service.create({
       data: {
         title: "Formatação de computador",
@@ -211,7 +211,7 @@ describe("CalledsController", () => {
       },
     });
 
-    
+
     const createCalledResponse = await request(App)
       .post("/calleds")
       .set("Authorization", `Bearer ${clientToken}`)
@@ -225,7 +225,7 @@ describe("CalledsController", () => {
 
     expect(createCalledResponse.status).toBe(201);
     const calledId = createCalledResponse.body.id;
-   
+
     const updateServiceResponse = await request(App)
       .put(`/calleds/${calledId}/`)
       .set("Authorization", `Bearer ${technicianToken}`)
@@ -295,11 +295,11 @@ describe("CalledsController", () => {
       .put(`/calleds/${calledId}/status`)
       .set("Authorization", `Bearer ${technicianToken}`)
       .send({
-        status: "em_andamento"
+        status: "em_atendimento"
       });
 
     expect(updateStatusResponse.status).toBe(200);
-    expect(updateStatusResponse.body.status).toEqual("em_andamento")
+    expect(updateStatusResponse.body.status).toEqual("em_atendimento")
   })
 
 })
