@@ -19,7 +19,7 @@ class ClientsController {
     return { ...clientData, photoUrl };
   }
 
-  async create(request: Request, response: Response) {
+  create = async (request: Request, response: Response) => {
 
     const bodySchema = z.object({
       name: z.string().trim().min(2),
@@ -48,7 +48,7 @@ class ClientsController {
     return response.status(201).json(userFormatted);
   }
 
-  async index(request: Request, response: Response) {
+  index = async (request: Request, response: Response) => {
     try {
       const clients = await prisma.client.findMany({
         select: {
@@ -71,7 +71,7 @@ class ClientsController {
     }
   }
 
-  async update(request: Request, response: Response) {
+  update = async (request: Request, response: Response) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -129,7 +129,7 @@ class ClientsController {
     return response.status(200).json(clientFormatted);
   }
 
-  async remove(request: Request, response: Response) {
+  remove = async (request: Request, response: Response) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -179,7 +179,7 @@ class ClientsController {
     return response.status(200).json({ message: "Usuário removido com sucesso!" });
   }
 
-  async uploadProfileImage(request: Request, response: Response) {
+  uploadProfileImage = async (request: Request, response: Response) => {
     const { clientId } = request.params;
 
     const userId = request.user?.id;
@@ -239,7 +239,7 @@ class ClientsController {
     return response.json(clientFormatted);
   }
 
-  async removeProfileImage(request: Request, response: Response) {
+  removeProfileImage = async (request: Request, response: Response) => {
     const { clientId } = request.params;
     const userId = request.user?.id;
     const userType = request.user?.type;

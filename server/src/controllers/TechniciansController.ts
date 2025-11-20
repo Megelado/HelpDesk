@@ -25,7 +25,7 @@ class TechniciansController {
     };
   }
 
-  async create(request: Request, response: Response) {
+  create = async (request: Request, response: Response) => {
     const bodySchema = z.object({
       name: z.string().trim().min(2),
       email: z.string().email(),
@@ -63,7 +63,7 @@ class TechniciansController {
     return response.status(201).json(userFormatted);
   }
 
-  async index(request: Request, response: Response) {
+  index = async (request: Request, response: Response) => {
     const technicians = await prisma.technician.findMany({
       select: {
         id: true,
@@ -84,7 +84,7 @@ class TechniciansController {
     // return response.json(adminsFormatted);
   }
 
-  async details(request: Request, response: Response) {
+  details = async(request: Request, response: Response) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -108,7 +108,7 @@ class TechniciansController {
   }
 
 
-  async update(request: Request, response: Response) {
+  update = async (request: Request, response: Response) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -157,7 +157,7 @@ class TechniciansController {
 
   }
 
-  async uploadProfileImage(request: Request, response: Response) {
+  uploadProfileImage = async (request: Request, response: Response) => {
     const { technicianId } = request.params;
 
     const userId = request.user?.id;
@@ -212,7 +212,7 @@ class TechniciansController {
 
 
   // NOVO MÉTODO: DELETE Profile Image
-  async deleteProfileImage(request: Request, response: Response) {
+  deleteProfileImage = async (request: Request, response: Response) => {
     const { technicianId } = request.params;
 
     const userId = request.user?.id;
@@ -262,7 +262,7 @@ class TechniciansController {
 
 
 
-  async toggleAvailability(req: Request, res: Response) {
+  toggleAvailability = async (req: Request, res: Response) => {
     const bodySchema = z.object({
       availability: z
         .array(z.string(), { required_error: "Disponibilidade é obrigatória." })
@@ -312,7 +312,7 @@ class TechniciansController {
     }
   }
 
-  async remove(request: Request, response: Response) {
+  remove = async (request: Request, response: Response) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
