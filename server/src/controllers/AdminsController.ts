@@ -207,7 +207,7 @@ class AdminsController {
       }
     }
 
-    const photoUrl = `/upload/admins/${request.file.filename}`;
+    const photoUrl = `/uploads/admins/${request.file.filename}`;
 
     try {
       const updated = await prisma.admin.update({
