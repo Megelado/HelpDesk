@@ -262,6 +262,9 @@ class CalledsController {
       throw new AppError("Chamado não encontrado.", 404);
     }
 
+    // 🔥 CRIA A BASE CORRETA AUTOMATICAMENTE
+    const baseUrl = `${request.protocol}://${request.get("host")}`;
+
     const totalPrice = called.services.reduce(
       (sum, service) => sum + Number(service.price),
       0
@@ -274,7 +277,7 @@ class CalledsController {
         ? {
           ...called.client,
           photoUrl: called.client.photoUrl
-            ? `http://localhost:3333${called.client.photoUrl}`
+            ? `${baseUrl}${called.client.photoUrl}`
             : null,
         }
         : null,
@@ -282,7 +285,7 @@ class CalledsController {
         ? {
           ...called.technician,
           photoUrl: called.technician.photoUrl
-            ? `http://localhost:3333${called.technician.photoUrl}`
+            ? `${baseUrl}${called.technician.photoUrl}`
             : null,
         }
         : null,
@@ -290,6 +293,7 @@ class CalledsController {
 
     return response.status(200).json(formattedCalled);
   }
+
 
   // ======================
   // ATUALIZAR SERVIÇOS DO CHAMADO
