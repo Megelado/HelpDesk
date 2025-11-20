@@ -5,6 +5,8 @@ import { AppError } from "@/utils/AppError";
 import { compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { env } from "@/Env";
+import { getBaseUrl } from "@/utils/getBaseUrl";
+
 
 const JWT_EXPIRES_IN = "1d";
 
@@ -111,12 +113,13 @@ class LoginController {
     const formattedUser = {
       ...userWithoutPassword,
       type,
-      photoUrl:
-        type === "admin"
-          ? user.photoUrl || "/assets/Avatar.png" // default se admin não tiver foto
-          : user.photoUrl
-            ? `http://localhost:3333${user.photoUrl}` // client ou technician
-            : null,
+      photoUrl: user.photoUrl
+        ? (user.photoUrl.startsWith("http")
+          ? user.photoUrl
+          : `${getBaseUrl()}${user.photoUrl.startsWith("/") ? "" : "/"}${user.photoUrl}`
+        )
+        : null,
+
     };
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

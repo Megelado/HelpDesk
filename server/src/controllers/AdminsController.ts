@@ -10,7 +10,9 @@ import { getBaseUrl } from "@/utils/getBaseUrl";
 
 class AdminsController {
 
-  // FORMATA A URL DA FOTO
+  // ===============================
+  // FORMAT PHOTO URL (CORRIGIDO)
+  // ===============================
   private formatAdminPhotoUrl(admin: {
     id: string;
     name: string;
@@ -20,16 +22,30 @@ class AdminsController {
     createdAt: Date;
     updatedAt: Date | null;
   }) {
-    const photoUrl = admin.photoUrl
-      ? `${getBaseUrl()}${admin.photoUrl.startsWith("/") ? "" : "/"}${admin.photoUrl}`
-      : null;
 
-    const { password, ...adminData } = admin;
+    let fullPhotoUrl = null;
 
-    return { ...adminData, photoUrl };
+    if (admin.photoUrl) {
+      // Se já for URL absoluta (http/https), não altera
+      if (admin.photoUrl.startsWith("http")) {
+        fullPhotoUrl = admin.photoUrl;
+      } else {
+        // URL relativa → prefixa com BASE_URL
+        fullPhotoUrl = `${getBaseUrl()}${admin.photoUrl}`;
+      }
+    }
+
+    const { password, ...rest } = admin;
+
+    return {
+      ...rest,
+      photoUrl: fullPhotoUrl,
+    };
   }
 
+  // ===============================
   // CREATE
+  // ===============================
   async create(request: Request, response: Response) {
 
     const bodySchema = z.object({
@@ -50,6 +66,7 @@ class AdminsController {
     }
 
     const hashedPassword = await hash(password, 8);
+
     const user = await prisma.admin.create({
       data: { name, email, password: hashedPassword },
     });
@@ -57,7 +74,9 @@ class AdminsController {
     return response.status(201).json(this.formatAdminPhotoUrl(user));
   }
 
+  // ===============================
   // INDEX
+  // ===============================
   async index(request: Request, response: Response) {
     const admins = await prisma.admin.findMany({
       select: {
@@ -71,12 +90,11 @@ class AdminsController {
       }
     });
 
-    const formatted = admins.map(a => this.formatAdminPhotoUrl(a));
-
-    return response.json(formatted);
+    return response.json(admins.map(a => this.formatAdminPhotoUrl(a)));
   }
-
+  // ===============================
   // UPDATE
+  // ===============================
   async update(request: Request, response: Response) {
 
     const paramsSchema = z.object({
@@ -123,7 +141,9 @@ class AdminsController {
     return response.json(this.formatAdminPhotoUrl(updatedAdmin));
   }
 
-  // REMOVE
+  // ===============================
+  // DELETE ADMIN
+  // ===============================
   async remove(request: Request, response: Response) {
     const paramsSchema = z.object({
       id: z.string().uuid(),
@@ -137,129 +157,109 @@ class AdminsController {
         select: { photoUrl: true }
       });
 
-      if (!admin) {
-        throw new AppError("Admin não encontrado!", 404);
-      }
+      if (!admin) throw new AppError("Admin não encontrado!", 404);
 
       if (admin.photoUrl) {
         const uploadFolder = path.resolve(__dirname, "..", "..", "..", "uploads");
-        const filePath = path.join(uploadFolder, "admins", admin.photoUrl.split("/").pop() as string);
+        const fileName = admin.photoUrl.split("/").pop()!;
+        const filePath = path.join(uploadFolder, "admins", fileName);
 
         try {
           await fs.unlink(filePath);
-        } catch (fileError: any) {
-          if (fileError.code !== "ENOENT") {
-            console.error(`Erro ao apagar arquivo ${filePath}:`, fileError);
-          }
+        } catch (err: any) {
+          if (err.code !== "ENOENT") console.error("Erro ao apagar arquivo:", err);
         }
       }
 
       await prisma.admin.delete({ where: { id } });
 
+      return response.status(200).json({ message: "Usuário removido com sucesso!" });
+
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
         throw new AppError("Usuário não encontrado ou já removido!", 404);
       }
       throw error;
     }
-
-    return response.status(200).json({ message: "Usuário removido com sucesso!" });
   }
 
+  // ===============================
   // UPLOAD PROFILE IMAGE
+  // ===============================
   uploadProfileImage = async (request: Request, response: Response) => {
     const { id: adminId } = request.params;
 
     const userId = request.user?.id;
     const userType = request.user?.type;
 
-    if (!userId) {
-      return response.status(401).json({ message: "Usuário não autenticado" });
-    }
+    if (!userId) return response.status(401).json({ message: "Usuário não autenticado" });
 
-    if (userType !== "admin" || userId !== adminId) {
-      return response.status(403).json({ message: "Você não tem permissão para alterar esta imagem" });
-    }
+    if (userType !== "admin" || userId !== adminId)
+      return response.status(403).json({ message: "Você não tem permissão" });
 
-    if (!request.file) {
+    if (!request.file)
       return response.status(400).json({ message: "Nenhuma imagem enviada" });
-    }
 
     const admin = await prisma.admin.findUnique({ where: { id: adminId } });
-    if (!admin) {
-      return response.status(404).json({ message: "Admin não encontrado" });
-    }
 
-    // Apagar imagem antiga
+    if (!admin)
+      return response.status(404).json({ message: "Admin não encontrado" });
+
+    // remover foto antiga
     if (admin.photoUrl) {
       const uploadFolder = path.resolve(__dirname, "..", "..", "..", "uploads");
-      const filePath = path.join(uploadFolder, "admins", admin.photoUrl.split("/").pop() as string);
+      const fileName = admin.photoUrl.split("/").pop()!;
+      const filePath = path.join(uploadFolder, "admins", fileName);
 
       try {
         await fs.unlink(filePath);
-      } catch (fileError: any) {
-        if (fileError.code !== "ENOENT") {
-          console.error(`Erro ao excluir imagem antiga: ${filePath}`, fileError);
-        }
+      } catch (err: any) {
+        if (err.code !== "ENOENT") console.error("Erro ao excluir imagem antiga:", err);
       }
     }
 
+    // sempre salvar URL RELATIVA
     const photoUrl = `/uploads/admins/${request.file.filename}`;
 
-    try {
-      const updated = await prisma.admin.update({
-        where: { id: adminId },
-        data: { photoUrl },
-      });
+    const updated = await prisma.admin.update({
+      where: { id: adminId },
+      data: { photoUrl },
+    });
 
-      const formatted = this.formatAdminPhotoUrl(updated);
+    return response.json(this.formatAdminPhotoUrl(updated));
+  };
 
-      return response.json(formatted);
-    } catch (err) {
-      console.error("ERRO AO ATUALIZAR ADMIN:", err);
-      return response.status(500).json({ message: "Erro interno ao atualizar admin" });
-    }
-  }
-
-
-  // DELETE PROFILE IMAGE
+  // ===============================
+  // REMOVE PROFILE IMAGE
+  // ===============================
   async deleteProfileImage(request: Request, response: Response) {
     const { adminId } = request.params;
 
     const userId = request.user?.id;
     const userType = request.user?.type;
 
-    if (!userId) {
-      return response.status(401).json({ message: "Usuário não autenticado" });
-    }
+    if (!userId) return response.status(401).json({ message: "Usuário não autenticado" });
 
-    if (userType !== "admin" || userId !== adminId) {
-      return response.status(403).json({ message: "Você não tem permissão para remover esta imagem" });
-    }
+    if (userType !== "admin" || userId !== adminId)
+      return response.status(403).json({ message: "Sem permissão" });
 
     const admin = await prisma.admin.findUnique({
       where: { id: adminId },
       select: { photoUrl: true, name: true, email: true, createdAt: true, updatedAt: true, id: true }
     });
 
-    if (!admin) {
+    if (!admin)
       return response.status(404).json({ message: "Admin não encontrado" });
-    }
 
     if (admin.photoUrl) {
       const uploadFolder = path.resolve(__dirname, "..", "..", "..", "uploads");
-      const fileName = admin.photoUrl.split("/").pop() as string;
+      const fileName = admin.photoUrl.split("/").pop()!;
       const filePath = path.join(uploadFolder, "admins", fileName);
 
       try {
         await fs.unlink(filePath);
-      } catch (fileError: any) {
-        if (fileError.code !== "ENOENT") {
-          console.error("Erro ao excluir imagem:", fileError);
-        }
+      } catch (err: any) {
+        if (err.code !== "ENOENT") console.error("Erro ao excluir imagem:", err);
       }
     }
 
