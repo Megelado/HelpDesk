@@ -212,7 +212,7 @@ export function Technicians() {
                 {c.photoUrl && (
                   <img
                     src={c.photoUrl} // Simplificado o uso do URL da foto
-                    alt={c.name}
+                    alt={"técnico"}
                     className="w-7 h-7 rounded-full object-cover"
                   />
                 )}

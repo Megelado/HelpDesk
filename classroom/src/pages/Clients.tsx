@@ -208,7 +208,7 @@ export function Clients() {
                   {photoUrlList && (
                     <img
                       src={photoUrlList} // <-- USANDO A URL FORMATADA (string | undefined)
-                      alt={c.name}
+                      alt={"cliente"}
                       className="w-7 h-7 rounded-full object-cover"
                     />
                   )}
