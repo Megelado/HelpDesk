@@ -166,7 +166,7 @@ export function CalledsClients() {
                       {c.technician?.photoUrl && (
                         <img
                           src={c.technician?.photoUrl}
-                          alt={"técnico"}
+                          alt={""}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       )}

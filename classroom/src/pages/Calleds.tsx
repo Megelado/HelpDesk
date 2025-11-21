@@ -178,7 +178,7 @@ export function Calleds() {
                       {c.client?.photoUrl && (
                         <img
                           src={c.client.photoUrl}
-                          alt={"cliente"}
+                          alt={""}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       )}
@@ -190,7 +190,7 @@ export function Calleds() {
                       {c.technician?.photoUrl && (
                         <img
                           src={c.technician?.photoUrl}
-                          alt={"técnico"}
+                          alt={""}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       )}
