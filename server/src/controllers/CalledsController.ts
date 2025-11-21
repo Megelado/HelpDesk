@@ -3,7 +3,19 @@ import { AppError } from "@/utils/AppError";
 import { Request, Response } from "express";
 import { z } from "zod";
 
+function getBaseUrl(req: Request) {
+  // Se rodando no Render → sempre usar HTTPS
+  const host = req.get("host");
+
+  if (host?.includes("onrender.com")) {
+    return `https://${host}`;
+  }
+
+  // Ambiente local → usa o protocolo real
+  return `${req.protocol}://${host}`;
+}
 class CalledsController {
+
   // ======================
   // CRIAR CHAMADO
   // ======================
@@ -78,7 +90,7 @@ class CalledsController {
         ? {
           ...called.technician,
           photoUrl: called.technician.photoUrl
-            ? `http://localhost:3333${called.technician.photoUrl}`
+            ? `${getBaseUrl(request)}${called.technician.photoUrl}`
             : null,
         }
         : null,
@@ -110,8 +122,6 @@ class CalledsController {
         orderBy: { createdAt: "desc" },
       });
 
-      const baseUrl = `${request.protocol}://${request.get("host")}`;
-
       const formatted = calleds.map((called) => ({
         ...called,
         totalPrice: called.services.reduce(
@@ -122,7 +132,7 @@ class CalledsController {
           ? {
             ...called.client,
             photoUrl: called.client.photoUrl
-              ? `${baseUrl}${called.client.photoUrl}`
+              ? `${getBaseUrl(request)}${called.client.photoUrl}`
               : null,
           }
           : null,
@@ -130,7 +140,7 @@ class CalledsController {
           ? {
             ...called.technician,
             photoUrl: called.technician.photoUrl
-              ? `${baseUrl}${called.technician.photoUrl}`
+              ? `${getBaseUrl(request)}${called.technician.photoUrl}`
               : null,
           }
           : null,
@@ -169,7 +179,6 @@ class CalledsController {
         orderBy: { createdAt: "desc" },
       });
 
-      const baseUrl = `${request.protocol}://${request.get("host")}`;
 
       const formatted = calleds.map((called) => ({
         ...called,
@@ -181,7 +190,7 @@ class CalledsController {
           ? {
             ...called.client,
             photoUrl: called.client.photoUrl
-              ? `${baseUrl}${called.client.photoUrl}`
+              ? `${getBaseUrl(request)}${called.client.photoUrl}`
               : null,
           }
           : null,
@@ -189,7 +198,7 @@ class CalledsController {
           ? {
             ...called.technician,
             photoUrl: called.technician.photoUrl
-              ? `${baseUrl}${called.technician.photoUrl}`
+              ? `${getBaseUrl(request)}${called.technician.photoUrl}`
               : null,
           }
           : null,
@@ -217,8 +226,6 @@ class CalledsController {
         orderBy: { createdAt: "desc" },
       });
 
-      const baseUrl = `${request.protocol}://${request.get("host")}`;
-
       const formatted = calleds.map((called) => ({
         ...called,
         totalPrice: called.services.reduce(
@@ -229,7 +236,7 @@ class CalledsController {
           ? {
             ...called.client,
             photoUrl: called.client.photoUrl
-              ? `${baseUrl}${called.client.photoUrl}`
+              ? `${getBaseUrl(request)}${called.client.photoUrl}`
               : null,
           }
           : null,
@@ -237,7 +244,7 @@ class CalledsController {
           ? {
             ...called.technician,
             photoUrl: called.technician.photoUrl
-              ? `${baseUrl}${called.technician.photoUrl}`
+              ? `${getBaseUrl(request)}${called.technician.photoUrl}`
               : null,
           }
           : null,
@@ -279,7 +286,7 @@ class CalledsController {
     }
 
     // 🔥 CRIA A BASE CORRETA AUTOMATICAMENTE
-    const baseUrl = `${request.protocol}://${request.get("host")}`;
+    const baseUrl = getBaseUrl(request);
 
     const totalPrice = called.services.reduce(
       (sum, service) => sum + Number(service.price),

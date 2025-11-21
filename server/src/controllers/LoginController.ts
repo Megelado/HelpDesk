@@ -5,8 +5,18 @@ import { AppError } from "@/utils/AppError";
 import { compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { env } from "@/Env";
-import { getBaseUrl } from "@/utils/getBaseUrl";
 
+function getBaseUrl(req: Request) {
+  // Se rodando no Render → sempre usar HTTPS
+  const host = req.get("host");
+
+  if (host?.includes("onrender.com")) {
+    return `https://${host}`;
+  }
+
+  // Ambiente local → usa o protocolo real
+  return `${req.protocol}://${host}`;
+}
 
 const JWT_EXPIRES_IN = "1d";
 
@@ -116,7 +126,7 @@ class LoginController {
       photoUrl: user.photoUrl
         ? (user.photoUrl.startsWith("http")
           ? user.photoUrl
-          : `${getBaseUrl()}${user.photoUrl.startsWith("/") ? "" : "/"}${user.photoUrl}`
+          : `${getBaseUrl(request)}${user.photoUrl.startsWith("/") ? "" : "/"}${user.photoUrl}`
         )
         : null,
 
