@@ -251,10 +251,18 @@ export function CalledsTechnicians() {
   }
 
   function shortenName(name: string, maxLength = 7) {
-    if (!name) return "";
-    const firstName = name.split(" ")[0];
-    return firstName.length > maxLength ? firstName.slice(0, maxLength) + "..." : firstName;
+    if (!name) return "...";
+
+    const parts = name.split(" ");
+    const firstName = parts[0];
+    const lastName = parts[1] || "";
+
+    const shortenedLastName =
+      lastName.length > maxLength ? lastName.slice(0, maxLength) + "..." : lastName;
+
+    return lastName ? `${firstName} ${shortenedLastName}` : firstName;
   }
+
 
 
   if (userType !== "technician") {
