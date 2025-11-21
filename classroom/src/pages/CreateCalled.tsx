@@ -206,7 +206,7 @@ export function CreateCalled() {
               </button>
 
               {open && (
-                <ul className="absolute left-0 mt-1 w-full border border-gray-500 rounded-[10px] z-10 max-h-48 overflow-auto text-gray-400">
+                <ul className="absolute left-0 mt-1 w-full bg-gray-600 border border-gray-500 rounded-[10px] z-10 max-h-48 overflow-auto text-gray-400">
                   {services.map(service => (
                     <li
                       key={service.id}

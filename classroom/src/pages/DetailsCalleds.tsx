@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
@@ -421,67 +420,57 @@ export function DetailsCalleds() {
 
           </div>
           {/* DIV 2 */}
-          <div className="border grid grid-cols-2 justify-between border-gray-500 p-4 rounded-[10px] max-w-[296px] max-h-[309px]">
-            <span className="flex flex-col mb-8 mt-2">
-              <span className="text-gray-400 text-xs">Técnico responsável</span>
-              <span className="flex items-center gap-2 mt-0.5">
-                {called.technician?.photoUrl && (
-                  <img
-                    src={called.technician.photoUrl}
-                    alt={called.technician.name[0]}
-                    className="w-5 h-5 rounded-full object-cover"
-                  />
-                )}
-                <span className="flex flex-col">
-                  <span className="text-sm text-gray-200">{called.technician?.name}</span>
-                  <span className="text-xs text-gray-300">{called.technician?.email}</span>
-                </span>
-              </span>
-            </span>
-            <span></span>
-            <span className="text-sm text-gray-400">Valores</span>
-            <span></span>
-            <div className="col-span-2 grid grid-cols-2 gap-y-1">
-
-              {/* Preço base */}
-              <span className="text-xs text-gray-200">Preço base</span>
-              <span className="text-xs text-gray-200 text-right mb-4">
-                R$ {called.services?.[0]?.price.toFixed(2)}
-              </span>
-
-              {/* Se NÃO for técnico → lista normal */}
-              {(userType === "admin" || userType === "client") && (
-                <>
-                  <span className="text-xs text-gray-400 mb-2">Adicionais</span>
-                  <span></span>
-
-                  {adicionais.map(s => (
-                    <React.Fragment key={s.id}>
-                      <span className="text-gray-200 text-xs">{s.title}</span>
-                      <span className="text-gray-200 text-xs text-right">R$ {s.price.toFixed(2)}</span>
-                    </React.Fragment>
-                  ))}
-                </>
+          <div className="border border-gray-500 p-4 rounded-[10px] max-w-full sm:max-w-[400px] max-h-[400px] overflow-y-auto">
+            <span className="text-sm text-gray-400">Técnico responsável</span>
+            <div className="flex items-center gap-2 mt-1">
+              {called.technician?.photoUrl && (
+                <img src={called.technician.photoUrl} alt="" className="w-5 h-5 rounded-full object-cover" />
               )}
-
-              {/* Se for técnico → apenas total dos adicionais */}
-              {userType === "technician" && (
-                <>
-                  <span className="text-xs text-gray-200">Adicionais</span>
-                  <span className="text-xs text-gray-200 text-right">
-                    R$ {totalAdicionais.toFixed(2)}
-                  </span>
-                </>
-              )}
-
-              {/* Total */}
-              <span className="font-bold mt-4">Total</span>
-              <span className="font-bold text-gray-100 mt-4 text-right">
-                R$ {called.totalPrice?.toFixed(2)}
-              </span>
+              <span className="text-sm text-gray-200">{called.technician?.name}</span>
             </div>
 
+            <span className="text-sm text-gray-400 mt-4">Valores</span>
+            <div className="flex flex-col gap-1 mt-1">
+              {/* Preço base */}
+              {(() => {
+                const baseService = called.services?.find(s => s.isDefault) || { price: 0 };
+                return (
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-200">Preço base</span>
+                    <span className="text-xs text-gray-200 text-right">R$ {Number(baseService.price).toFixed(2)}</span>
+                  </div>
+                );
+              })()}
+
+              {/* Lista de adicionais para clientes (não técnicos) */}
+              {userType !== "technician" &&
+                adicionais.map(s => (
+                  <div key={s.id} className="flex justify-between">
+                    <span className="text-xs text-gray-200 truncate">{s.title}</span>
+                    <span className="text-xs text-gray-200 text-right">R$ {s.price.toFixed(2)}</span>
+                  </div>
+                ))}
+
+              {/* Total adicionais para técnicos */}
+              {userType === "technician" && (
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-200">Adicionais</span>
+                  <span className="text-xs text-gray-200 text-right">R$ {totalAdicionais.toFixed(2)}</span>
+                </div>
+              )}
+
+              {/* Total geral */}
+              <div className="flex justify-between mt-2 font-bold">
+                <span>Total</span>
+                <span>
+                  R$ {called.totalPrice.toFixed(2)}
+                </span>
+              </div>
+            </div>
           </div>
+
+
+
 
           {/* DIV 3 */}
           {userType === "technician" && (
