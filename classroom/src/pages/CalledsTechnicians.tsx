@@ -216,11 +216,11 @@ export function CalledsTechnicians() {
                       {c.client?.photoUrl && (
                         <img
                           src={c.client.photoUrl}
-                          alt={c.client?.name}
+                          alt={"cliente"}
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       )}
-                      <span>{c.client?.name}</span>
+                      <span>{shortenName(c.client?.name || "")}</span>
                     </div>
 
                     {/* STATUS */}
@@ -248,6 +248,12 @@ export function CalledsTechnicians() {
         </ul>
       </div>
     );
+  }
+
+  function shortenName(name: string, maxLength = 7) {
+    if (!name) return "";
+    const firstName = name.split(" ")[0];
+    return firstName.length > maxLength ? firstName.slice(0, maxLength) + "..." : firstName;
   }
 
 

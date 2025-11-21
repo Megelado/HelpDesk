@@ -56,6 +56,12 @@ export function CalledsClients() {
       .map(word => word[0].toUpperCase() + word.slice(1))
       .join(" ");
   }
+  
+  function shortenName(name: string, maxLength = 7) {
+    if (!name) return "";
+    const firstName = name.split(" ")[0];
+    return firstName.length > maxLength ? firstName.slice(0, maxLength) + "..." : firstName;
+  }
 
   const statusClasses: Record<string, string> = {
     aberto: "text-feedback-open bg-feedback-open/20",
@@ -152,11 +158,11 @@ export function CalledsClients() {
                       {c.technician?.photoUrl && (
                         <img
                           src={c.technician?.photoUrl}
-                          alt={c.technician?.name}
+                          alt={"técnico"}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       )}
-                      <span>{c.technician?.name}</span>
+                      <span>{shortenName(c.technician?.name || "")}</span>
                     </div>
 
                     {/* Status */}

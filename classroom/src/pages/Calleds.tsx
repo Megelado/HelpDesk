@@ -57,6 +57,13 @@ export function Calleds() {
       .join(" ");
   }
 
+  function shortenName(name: string, maxLength = 7) {
+    if (!name) return "";
+    const firstName = name.split(" ")[0];
+    return firstName.length > maxLength ? firstName.slice(0, maxLength) + "..." : firstName;
+  }
+
+
   const statusClasses: Record<string, string> = {
     aberto: "text-feedback-open bg-feedback-open/20",
     em_atendimento: "text-feedback-progress bg-feedback-progress/20",
@@ -163,11 +170,11 @@ export function Calleds() {
                       {c.client?.photoUrl && (
                         <img
                           src={c.client.photoUrl}
-                          alt={c.client?.name}
+                          alt={"cliente"}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       )}
-                      <span>{c.client?.name}</span>
+                      <span>{shortenName(c.client?.name || "")}</span>
                     </div>
 
                     {/* Técnico */}
@@ -175,11 +182,11 @@ export function Calleds() {
                       {c.technician?.photoUrl && (
                         <img
                           src={c.technician?.photoUrl}
-                          alt={c.technician?.name}
+                          alt={"técnico"}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       )}
-                      <span>{c.technician?.name}</span>
+                      <span>{shortenName(c.technician?.name || "")}</span>
                     </div>
 
                     {/* Status */}
