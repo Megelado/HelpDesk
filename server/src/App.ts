@@ -10,6 +10,11 @@ const App = express();
 // Permite JSON no body
 App.use(express.json());
 
+App.get("/ping", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+
 // CORS global
 App.use(cors({
   origin: [
