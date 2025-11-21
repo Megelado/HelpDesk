@@ -21,8 +21,8 @@ class CalledsController {
   // ======================
   async create(request: Request, response: Response) {
     const bodySchema = z.object({
-      title: z.string().trim().min(5),
-      description: z.string().trim(),
+      title: z.string().trim().min(5).max(30),
+      description: z.string().trim().min(10).max(50),
       category: z.string().trim().optional(),
       clientId: z.string().uuid(),
       serviceIds: z.array(z.string().uuid()).min(1, "Envie pelo menos um serviço."),

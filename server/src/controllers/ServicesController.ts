@@ -6,7 +6,7 @@ import { AppError } from "@/utils/AppError";
 class ServicesController {
   async create(request: Request, response: Response) {
     const bodySchema = z.object({
-      title: z.string().trim().min(5),
+      title: z.string().trim().min(5).max(30),
       price: z.number().min(0),
       active: z.boolean().optional(),
       isDefault: z.boolean().optional(),
@@ -30,7 +30,7 @@ class ServicesController {
     const { id } = request.params
 
     const bodySchema = z.object({
-      title: z.string().trim().min(5),
+      title: z.string().trim().min(5).max(30),
       price: z.number().min(1),
       active: z.boolean().optional(),
       isDefault: z.boolean().optional(),
